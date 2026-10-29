@@ -6,6 +6,22 @@ return {
         options = {
             separator_style = "slant", -- 分隔符样式
             always_show_bufferline = true,
+            diagnostics = "nvim_lsp",
+            diagnostics_indicator = function(_, _, diagnostics_dict)
+                local indicator = " "
+                for level, number in pairs(diagnostics_dict) do
+                    local symbol
+                    if level == "error" then
+                        symbol = "E"
+                    elseif level == "warning" then
+                        symbol = "W"
+                    else
+                        symbol = "I"
+                    end
+                    indicator = indicator .. number .. symbol
+                end
+                return indicator
+            end,
         }
     },
     keys = {

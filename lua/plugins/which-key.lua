@@ -19,6 +19,7 @@ return {
       { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "实时搜索" },
       { "<leader>w", group = "窗口" },
       { "<leader>wd", "<C-W>c", desc = "关闭窗口" },
+      { "<leader>l", group = "LSP" },
     })
   end,
 }
