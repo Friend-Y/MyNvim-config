@@ -45,16 +45,22 @@ return {
       vim.lsp.config(lsp, config)
       vim.lsp.enable(lsp)
     end
-
-    -- 需要其他语言服务器时，在这里继续调用 setup() 即可
-    setup("lua-language-server", {
-      settings = {
-        Lua = {
-          diagnostics = { globals = { "vim" } },
+    -- 添加其他的lsp是使用[名称]={};
+    local servers = {
+        ["lua-language-server"]={
+            settings = {
+                Lua = {
+                    diagnostics = {
+                        globals = {"vim"}
+                    }
+                }
+            }
         },
-      },
-    })
-
+        ["pyright"]={},
+    }
+    for server,config in pairs(servers) do
+        setup(server,config)
+    end
     vim.diagnostic.config({ update_in_insert = true })
 
     -- Mason 在 VeryLazy 才加载，此时当前 buffer 的 FileType 已经触发过；

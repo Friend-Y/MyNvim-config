@@ -12,11 +12,11 @@ return {
                 for level, number in pairs(diagnostics_dict) do
                     local symbol
                     if level == "error" then
-                        symbol = "E"
+                        symbol = " "
                     elseif level == "warning" then
-                        symbol = "W"
+                        symbol = " "
                     else
-                        symbol = "I"
+                        symbol = " "
                     end
                     indicator = indicator .. number .. symbol
                 end
