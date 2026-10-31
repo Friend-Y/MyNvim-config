@@ -26,6 +26,14 @@ Personal Neovim config loaded from `~/.config/nvim`. There is no build, test sui
 - Mason loads on `VeryLazy`, after the first buffer's `FileType`; `mason.lua` re-fires `FileType` so the startup buffer still attaches. Keep that block unless you change Mason's load event.
 - LSP keymaps (`<leader>l*`) live in `lua/plugins/lspsaga.lua`; bufferline also shows LSP diagnostics.
 
+## Treesitter
+
+- `lua/plugins/nvim-treesitter.lua` uses the rewritten `main` branch API: no `nvim-treesitter.configs`, `lazy = false`, and `build = ":TSUpdate"`. Do not use the old `opts.ensure_installed` / `highlight` config.
+- The local `ensure_installed` list is only the parsers this machine should auto-install. It is independent of LSP: add `python` for Python highlighting, `markdown` + `markdown_inline` for Markdown, etc. Installed parsers persist; `:TSInstall` can install one without editing the list.
+- Requires Neovim 0.12+, `tree-sitter` CLI 0.26.1+ in `PATH`, a C compiler, plus `curl` and `tar`. Parsers install to `~/.local/share/nvim/site`.
+- Highlighting is not automatic on `main`; the FileType autocmd calls `vim.treesitter.start()`. Missing parsers are installed asynchronously, so restart after the first install.
+- Verify: open a target file and run `:lua =vim.treesitter.get_parser(0)`; `:TSLog` shows install errors, `:TSUpdate` updates installed parsers.
+
 ## Verify
 
 - Parse all Lua: `luac -p init.lua lua/core/*.lua lua/plugins/*.lua`

@@ -12,3 +12,4 @@ vim.opt.smartcase = true
 vim.opt.hlsearch = false
 vim.env.LANGUAGE = "zh_CN:en_US"
 vim.cmd('language zh_CN.utf8')
+vim.opt.showmode = false

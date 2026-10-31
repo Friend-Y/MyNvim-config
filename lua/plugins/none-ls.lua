@@ -1,35 +1,35 @@
 return {
-  "nvimtools/none-ls.nvim",
-  dependencies = {
-    "nvim-lua/plenary.nvim",
-    "mason-org/mason.nvim",
-  },
-  event = "VeryLazy",
-  config = function()
-    local registry = require("mason-registry")
-    local function install(name)
-      local success, package = pcall(registry.get_package, name)
-      if success and not package:is_installed() then
-        package:install()
-      end
-    end
+	"nvimtools/none-ls.nvim",
+	dependencies = {
+		"nvim-lua/plenary.nvim",
+		"mason-org/mason.nvim",
+	},
+	event = "VeryLazy",
+	config = function()
+		local registry = require("mason-registry")
+		local function install(name)
+			local success, package = pcall(registry.get_package, name)
+			if success and not package:is_installed() then
+				package:install()
+			end
+		end
 
-    install("stylua")
+		install("stylua")
 
-    local null_ls = require("null-ls")
-    null_ls.setup({
-      sources = {
-        null_ls.builtins.formatting.stylua,
-      },
-    })
-  end,
-  keys = {
-    {
-      "<leader>lf",
-      function()
-        vim.lsp.buf.format({ async = true })
-      end,
-      desc = "格式化当前文件",
-    },
-  },
+		local null_ls = require("null-ls")
+		null_ls.setup({
+			sources = {
+				null_ls.builtins.formatting.stylua,
+			},
+		})
+	end,
+	keys = {
+		{
+			"<leader>lf",
+			function()
+				vim.lsp.buf.format({ async = true })
+			end,
+			desc = "格式化当前文件",
+		},
+	},
 }
