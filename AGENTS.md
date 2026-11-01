@@ -17,6 +17,7 @@ Personal Neovim config loaded from `~/.config/nvim`. There is no build, test sui
 - Telescope keys are defined twice: functions in `lua/plugins/telescope.lua` and command strings in `lua/plugins/which-key.lua`. Update both or consolidate.
 - `core/Keymap.lua` maps `<C-z>` to undo in normal and insert mode (overrides the default suspend).
 - `telescope-fzf-native.nvim` builds with `make`, so a C compiler is required on a fresh machine.
+- `lua/core/diff_colors.lua` re-applies high-contrast `Diff*` groups on `ColorScheme`; matugen's template uses `surface_high` for all diff backgrounds and reloads asynchronously, so do not remove this override if diff colors look washed out.
 
 ## LSP
 
