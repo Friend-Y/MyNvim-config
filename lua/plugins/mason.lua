@@ -57,6 +57,7 @@ return {
 				},
 			},
 			["pyright"] = {},
+            ["marksman"] = {},
 		}
 		for server, config in pairs(servers) do
 			setup(server, config)

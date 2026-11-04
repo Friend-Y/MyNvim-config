@@ -18,6 +18,13 @@ Personal Neovim config loaded from `~/.config/nvim`. There is no build, test sui
 - `core/Keymap.lua` maps `<C-z>` to undo in normal and insert mode (overrides the default suspend).
 - `telescope-fzf-native.nvim` builds with `make`, so a C compiler is required on a fresh machine.
 - `lua/core/diff_colors.lua` re-applies high-contrast `Diff*` groups on `ColorScheme`; matugen's template uses `surface_high` for all diff backgrounds and reloads asynchronously, so do not remove this override if diff colors look washed out.
+- `lua/core/syntax_colors.lua` derives distinct syntax hues from the matugen palette on every `ColorScheme` (teal functions, peach types, orange numbers, blue variables, green strings); it only applies when `vim.g.colors_name == "matugen"`.
+- MarkView skips wide tables when `wrap` is on (>=90% of the window), so `MarkView.lua` sets Markdown buffers to `wrap=false`; `<leader>mw` toggles wrapping. This is a MarkView limitation, not invalid Markdown.
+- MarkView math (`$$...$$`, `$...$`) needs the `latex` treesitter parser; `nvim-treesitter.lua` includes `latex` in `ensure_installed`.
+- Markdown: `<leader>mo` opens the markdown-plus TOC (`:Toc`) in a right-side vertical split and refocuses it if already open; inside it `<Enter>` jumps, `l`/`h` expand/collapse, `q` closes. markdown-plus defaults use `<localleader>` (comma), so its keys are `,m*`/`,h*`; its `opts.keymaps` table only accepts `enabled`.
+- `lua/plugins/mdkite.lua` provides a browser Markdown preview (`<leader>mp` / `:MdKite`), separate from MarkView's inline rendering; it depends on `kitehost.nvim` and loads its browser assets from CDN.
+- `lua/plugins/obsidian.lua` points at the vault `~/Documents/Obsidian/MyVault/obsidian_-data` and sets `conceallevel=2` for Markdown; obsidian.nvim edits vault files directly, so no separate content sync exists. Obsidian keys use `<leader>m*` (`mc` check, `mn` new, `mq` quick switch, `md` today, `ml` backlinks, `mf` search). `lua/plugins/obsidian-bridge.lua` mirrors navigation/scroll via Obsidian's Local REST API (`http://localhost:27123`, `OBSIDIAN_REST_API_KEY`); Bridge keys are `<leader>mb*`.
+- `lua/plugins/MarkView.lua` keeps MarkView's default rendering (no custom hybrid mode); callouts use the Obsidian preset, tables use single borders, LaTeX blocks use `MarkviewLatexBlock`, and horizontal rules keep MarkView's default centered style.
 
 ## LSP
 
@@ -26,6 +33,7 @@ Personal Neovim config loaded from `~/.config/nvim`. There is no build, test sui
 - Blink supplies LSP capabilities; formatting capabilities are disabled on Mason-managed servers so `none-ls` (stylua) is the only formatter. `<leader>lf` formats.
 - Mason loads on `VeryLazy`, after the first buffer's `FileType`; `mason.lua` re-fires `FileType` so the startup buffer still attaches. Keep that block unless you change Mason's load event.
 - LSP keymaps (`<leader>l*`) live in `lua/plugins/lspsaga.lua`; bufferline also shows LSP diagnostics.
+- `lua/core/lsp_highlight.lua` implements VS Code-style symbol occurrence highlighting via `vim.lsp.buf.document_highlight()` on `CursorHold`/`CursorHoldI` (300ms) and clears it on cursor movement; it relies on the theme's `LspReference*` groups.
 
 ## Treesitter
 
