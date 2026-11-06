@@ -38,82 +38,133 @@ lazygit
 :hi DiffAdd
 :hi DiffDelete
 
-# Obsidian 与 obsidian-bridge.nvim
+# Obsidian 与 Vim Motions
 
-相关配置：
+Obsidian 集成现在完全在 Obsidian 应用内完成，不再使用 `obsidian.nvim` 或 `obsidian-bridge.nvim`。Neovim 侧只保留 Vim Motions 的配置文件：
 
-- `lua/plugins/obsidian.lua`
-- `lua/plugins/obsidian-bridge.lua`
+```text
+~/.config/nvim/obsidian/init.lua
+```
 
-当前 vault 路径：
+Vault 路径：
 
 ```text
 ~/Documents/Obsidian/MyVault/obsidian_-data
 ```
 
-如果实际路径不同，修改 `lua/plugins/obsidian.lua` 中的 `workspaces`。
+Vim Motions 的 **Custom init.lua path** 当前设置为：
+
+```text
+~/.config/obsidian/init.lua
+```
+
+这个文件是指向上述配置的符号链接：
+
+```text
+~/.config/obsidian/init.lua
+  -> ~/.config/nvim/obsidian/init.lua
+```
+
+如果移动了 Neovim 配置目录，需要重新创建这个链接；也可以删除链接，在 Vim Motions 设置里把 **Custom init.lua path** 直接改为 `~/.config/nvim/obsidian/init.lua`。
 
 ## 前置条件
 
-1. 安装并启用 Obsidian 社区插件 **Local REST API**
-2. 默认配置使用非加密 HTTP：
+在 Obsidian 设置 → 编辑器 → **Vim 键位绑定** 中关闭内置 Vim 模式，然后重启 Obsidian。Vim Motions 需要接管 Vim 操作；内置 Vim 模式开启时它不会启用。
+
+## 生效方式
+
+修改 `obsidian/init.lua` 后，在 Obsidian 命令面板执行：
 
 ```text
-http://localhost:27123
+Vim Motions: Reload configuration
 ```
 
-需要在 Local REST API 设置中启用非加密 HTTP 服务。
+或者重启 Obsidian。Vim Motions 不会自动监听这个外部文件。
 
-1. 将 API Key 写入 shell 配置：
+## 快捷键
 
-```bash
-export OBSIDIAN_REST_API_KEY="你的 API Key"
-```
+Leader 是空格，localleader 是逗号。完整映射见 `obsidian/init.lua`。
 
-写入 `~/.bashrc`、`~/.zshrc` 或对应 shell 的配置文件后，重新打开终端和 Neoviml。我的ArchLinux地址为"~/.config/fish/config.fish"
+### 查找
 
-1. 使用 Bridge 时保持 Obsidian 正在运行。
+| 快捷键 | 功能 |
+|---|---|
+| `<leader>ff` | 查找文件 |
+| `<leader>fg` | 全库搜索 |
+| `<leader>fb` | 切换缓冲区 |
+| `<leader>fh` | 搜索标题 |
+| `<leader>fo` | 文档大纲 |
+| `<leader>fk` | 反向链接 |
+| `<leader>ft` | 搜索标签 |
+| `<leader>fr` | 最近文件 |
+| `<leader>fm` | 跳转标记 |
+| `<leader>fR` | 寄存器 |
+| `<leader>fp` | 继续上次搜索 |
 
-如果使用 HTTPS，则修改 `lua/plugins/obsidian-bridge.lua`：
+### 缓冲区与窗口
+
+| 快捷键 | 功能 |
+|---|---|
+| `<leader>bh` / `<leader>bl` | 上一个 / 下一个缓冲区 |
+| `<leader>bp` / `<leader>bd` | 选择 / 关闭缓冲区 |
+| `<leader>wd` / `<leader>wo` | 关闭当前 / 其他标签页 |
+| `<leader>wv` / `<leader>ws` | 垂直 / 水平分屏 |
+| `<leader>wh/j/k/l` | 聚焦左 / 下 / 上 / 右窗格 |
+
+### 导航与文件
+
+| 快捷键 | 功能 |
+|---|---|
+| `<leader>hp` | 跳转到任意单词（EasyMotion） |
+| `<leader>uf` | 切换左侧栏 |
+| `<leader>uF` | 在文件浏览器中定位当前文件 |
+| `<leader>yy` / `<leader>yc` | 在 Oil 中打开当前目录 / Vault 根目录 |
+| `<leader>lg` | 打开 Obsidian Git 视图 |
+
+### Obsidian 笔记
+
+| 快捷键 | 功能 |
+|---|---|
+| `<leader>md` | 今日笔记 |
+| `<leader>ml` | 反向链接 |
+| `<leader>mf` | 搜索笔记 |
+| `<leader>mq` | 快速切换笔记 |
+| `<leader>mn` | 新建笔记 |
+
+### 链接与 Markdown
+
+| 快捷键 | 功能 |
+|---|---|
+| `<leader>mo` | 打开当前笔记大纲 |
+| `<leader>mp` | 切换阅读视图 |
+| `<leader>lr` | 重命名当前笔记 |
+| `<leader>lc` | 上下文操作 |
+| `<leader>ld` | 跳转到链接目标 |
+| `<leader>lh` | 预览链接 / 脚注 |
+| `<leader>lR` | 查看反向链接 |
+| `,mb` / `,mi` / `,mS` | 加粗 / 斜体 / 删除线 |
+| `` ,m` `` / `,m=` | 行内代码 / 高亮 |
+| `,ml` / `,mc` | 插入链接 / 代码块 |
+| `,ms` | 切换标题级别 |
+| `,h1` - `,h6` | 设为 H1 - H6 |
+| `,h0` / `,hT` | 清除标题 / 打开大纲 |
+
+Obsidian 没有直接对应项的功能：下划线、编辑链接、URL 转链接、引用式链接、行内链接、智能粘贴、切换代码块语言、生成/更新目录。这些键没有映射，使用 Obsidian 原生操作即可。
+
+## 自己添加键位
+
+Vim Motions 的 Lua 配置使用 `vim.keymap.set`：
 
 ```lua
-opts = {
-  obsidian_server_address = "https://127.0.0.1:27124",
-  cert_path = "~/.ssl/obsidian.crt",
-}
+vim.keymap.set("n", "<leader>xx", ":ob command-id<CR>", { desc = "说明" })
 ```
 
-## conceallevel
+- 第一个参数：`"n"` 普通模式，`"v"` 可视模式，`"o"` operator-pending，也可以写 `{ "n", "v" }`
+- 第二个参数：按键序列
+- 第三个参数：`:命令<CR>` 字符串，或者 Lua 函数
+- `desc` 会显示在 which-key 提示中
 
-`lua/plugins/obsidian.lua` 会自动为 Markdown buffer 设置：
-
-```lua
-vim.wo.conceallevel = 2
-```
-
-用于启用 Obsidian 的额外 UI 功能。
-
-## 滚动同步
-
-当前 `lua/plugins/obsidian-bridge.lua` 中：
-
-```lua
-scroll_sync = true
-```
-
-滚动同步需要作者提供的补丁版 Local REST API：
-
-```text
-https://github.com/oflisback/obsidian-local-rest-api
-```
-
-如果没有安装补丁版，将配置改为：
-
-```lua
-scroll_sync = false
-```
-
-否则可能出现滚动不同步或连接警告。
+在 Obsidian 里执行 `:ob`（不带参数）可以列出所有可用的 Obsidian 命令 ID。修改后执行 **Vim Motions: Reload configuration** 生效。
 
 # 调整语法高亮颜色
 

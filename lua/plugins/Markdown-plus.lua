@@ -54,7 +54,7 @@ return {
     })
 
     local function set_toc_keymap(buf)
-      vim.keymap.set("n", "<leader>mo", toggle_toc, {
+      vim.keymap.set("n", "<leader>uo", toggle_toc, {
         buffer = buf,
         desc = "查看 Markdown 目录",
       })

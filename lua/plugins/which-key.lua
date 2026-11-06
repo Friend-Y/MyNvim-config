@@ -54,7 +54,6 @@ return {
 
       local specs = {
         { "<leader>m", group = "Markdown 文档", buffer = buf },
-        { "<leader>mb", group = "Obsidian Bridge", buffer = buf },
         { localleader .. "m", group = "Markdown 编辑", buffer = buf },
         { localleader .. "h", group = "Markdown 标题", buffer = buf },
       }
