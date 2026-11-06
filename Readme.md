@@ -346,6 +346,31 @@ map("n", "<leader>uf", "<cmd>NvimTreeToggle<cr>", { desc = "NvimTree 文件树" 
 map("n", "<leader>yy", "<cmd>Yazi<cr>", { desc = "Yazi 当前文件" })
 ```
 
+## 快捷键提示
+
+`which-key.nvim` 在普通 Neovim 中使用浮动窗口，而 vscode-neovim 不会渲染这种浮动窗口，所以按下空格后看不到提示。
+
+VSCode 中安装了一个桥接扩展：
+
+```text
+tiago.whichkey-nvim-vscode
+```
+
+它不拦截键盘，而是读取 `which-key.nvim` 的映射，在 VSCode 右侧打开一个 **Which Key** Webview 面板，并在状态栏显示当前按键序列。
+
+- 扩展是本地构建的 `0.4.3` VSIX，未上架 Marketplace
+- 源码：`https://github.com/Tiag0ss/whichkey-nvim-vscode`
+- 需要 `which-key.nvim` 在 VSCode 中加载，因此 `lua/vscode_plugins/which-key.lua` 保持 `lazy = false`
+- 首次按下空格后，右侧面板会自动打开；继续按键即可查看下一层映射
+- 面板打开一次后会一直保留，关闭后下次按空格会重新打开
+
+如果仍看不到提示：
+
+1. 执行 `Developer: Reload Window`
+2. 确认 VSCode 输出面板中的 `Which Key (Neovim)` 没有报错
+3. 在 VSCode 中执行 `:lua =require('which-key.view')._whichkey_nvim_vscode`，应返回 `true`
+4. 确认 `~/.config/Code/User/settings.json` 中有 `"whichkeyNvim.autoOpen": true`
+
 ## VSCode 设置
 
 `~/.config/Code/User/settings.json` 中需要保留：
@@ -355,7 +380,10 @@ map("n", "<leader>yy", "<cmd>Yazi<cr>", { desc = "Yazi 当前文件" })
   "vscode-neovim.neovimExecutablePaths.linux": "/usr/bin/nvim",
   "extensions.experimental.affinity": {
     "asvetliakov.vscode-neovim": 1
-  }
+  },
+  "whichkeyNvim.sidebar": "right",
+  "whichkeyNvim.autoOpen": true,
+  "whichkeyNvim.statusBar": true
 }
 ```
 
