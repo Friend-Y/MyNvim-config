@@ -12,9 +12,11 @@ if not vim.uv.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+local plugin_dir = vim.g.vscode and "vscode_plugins" or "plugins"
+
 require("lazy").setup({
     spec = {
-        {import = "plugins"},
+        {import = plugin_dir},
     },
     {
         concurrency = 1,

@@ -263,3 +263,108 @@ matugen 模板：
 ```
 
 修改 `30.0` 后需要重新运行 matugen，再用 `:MatugenReload` 或 `SIGUSR1` 让 Neovim 重载主题。
+
+# VSCode + vscode-neovim
+
+`vscode-neovim` 会启动一个嵌入的 Neovim，并加载 `~/.config/nvim/init.lua`。`init.lua` 通过 `vim.g.vscode` 分支：
+
+- 普通 Neovim：加载 `lua/plugins/` 的完整配置
+- VSCode：加载 `lua/vscode_plugins/` 的精简配置
+
+## VSCode 中保留的插件
+
+- 编辑类：`nvim-surround`、`hop`、`which-key`
+- Markdown：`markdown-plus`、`mdkite`
+- 文件/搜索（实验）：`telescope`、`nvim-tree`、`yazi`
+
+LSP、补全、格式化、Treesitter 高亮、状态栏、bufferline、文件树 UI、Git 等使用 VSCode 原生功能。
+
+## 快捷键
+
+查找与文件：
+
+| 快捷键 | 功能 |
+|---|---|
+| `<leader>ff` | VSCode 快速打开文件 |
+| `<leader>fg` | VSCode 全库搜索 |
+| `<leader>fb` | VSCode 切换编辑器 |
+| `<leader>fh` | VSCode 命令面板 |
+| `<leader>fo` | 文档大纲 / 符号 |
+| `<leader>fr` | 最近文件 |
+| `<leader>fk` | 查找引用 |
+
+缓冲区、窗口与界面：
+
+| 快捷键 | 功能 |
+|---|---|
+| `<leader>bh` / `<leader>bl` | 上一个 / 下一个编辑器 |
+| `<leader>bp` / `<leader>bd` | 选择 / 关闭编辑器 |
+| `<leader>wd` / `<leader>wo` | 关闭当前 / 其他编辑器 |
+| `<leader>wv` / `<leader>ws` | 向右 / 向下分屏 |
+| `<leader>wh/j/k/l` | 聚焦左 / 下 / 上 / 右编辑器组 |
+| `<leader>uf` | 切换侧边栏 |
+| `<leader>uF` | 在资源管理器中定位当前文件 |
+| `<leader>yy` / `<leader>yc` | 在资源管理器中定位 / 打开资源管理器 |
+
+LSP、Git 与 Markdown：
+
+| 快捷键 | 功能 |
+|---|---|
+| `<leader>lr` | 重命名符号 |
+| `<leader>lc` | 快速修复 |
+| `<leader>ld` | 跳转到定义 |
+| `<leader>lh` | 悬停文档 |
+| `<leader>lR` | 查找引用 |
+| `<leader>ln` / `<leader>lp` | 下一个 / 上一个诊断 |
+| `<leader>lf` | 格式化当前文件 |
+| `<leader>lg` | 打开源代码管理 |
+| `<leader>mo` / `<leader>uo` | Markdown 大纲 |
+| `<leader>mP` | VSCode Markdown 预览 |
+| `<leader>mp` | mdkite 浏览器预览 |
+| `,m*` / `,h*` | markdown-plus 的编辑和标题快捷键 |
+
+实验性插件（VSCode 下可能显示异常）：
+
+| 快捷键 | 功能 |
+|---|---|
+| `<leader>fF` / `<leader>fG` | Telescope 查找文件 / 实时搜索 |
+| `<leader>e` | NvimTree 文件树 |
+| `<leader>yY` / `<leader>yC` | Yazi 当前文件 / 当前目录 |
+
+这些插件的主键仍然使用 VSCode 原生功能；如果不需要实验性插件，可以删除 `lua/vscode_plugins/telescope.lua`、`nvim-tree.lua`、`yazi.lua`，并移除 `lua/core/vscode.lua` 中对应的 `<leader>fF`、`<leader>e`、`<leader>yY` / `<leader>yC` 映射。
+
+如果希望插件占用主键（例如 `<leader>ff` 打开 Telescope），把 `lua/core/vscode.lua` 中的 VSCode action 改成插件的命令即可：
+
+```lua
+-- 用 Telescope 替换 VSCode 快速打开
+map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Telescope 查找文件" })
+
+-- 用 NvimTree 替换 VSCode 侧边栏
+map("n", "<leader>uf", "<cmd>NvimTreeToggle<cr>", { desc = "NvimTree 文件树" })
+
+-- 用 Yazi 替换 VSCode 资源管理器
+map("n", "<leader>yy", "<cmd>Yazi<cr>", { desc = "Yazi 当前文件" })
+```
+
+## VSCode 设置
+
+`~/.config/Code/User/settings.json` 中需要保留：
+
+```jsonc
+{
+  "vscode-neovim.neovimExecutablePaths.linux": "/usr/bin/nvim",
+  "extensions.experimental.affinity": {
+    "asvetliakov.vscode-neovim": 1
+  }
+}
+```
+
+`vscode-neovim.neovimInitVimPaths.linux` 留空，让扩展加载默认的 `~/.config/nvim/init.lua`。
+
+## 测试
+
+```bash
+nvim --headless --cmd 'let g:vscode=1' -u init.lua +qa
+```
+
+如果 VSCode 中插件行为异常，执行 `Neovim: Restart Extension`，并查看 `Output: Focus on Output View` 中的 `vscode-neovim logs`。
