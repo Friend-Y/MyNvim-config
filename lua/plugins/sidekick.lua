@@ -32,6 +32,13 @@ return {
 				split = {
 					width = 0, -- 设为 0 以跳过默认的尺寸解析逻辑
 				},
+				-- sidekick 默认把 <C-b>/<C-f> 用于自己的 buffer/file picker，
+				-- 这两个键永远不会到达 Claude Code。禁用后 Claude Code 的
+				-- transcript 整页滚动（Ctrl-B/Ctrl-F）可用。
+				keys = {
+					buffers = false,
+					files = false,
+				},
 				-- 在 win 内部通过 config 回调动态设置正整数宽度
 				config = function(terminal)
 					terminal.opts.split.width = math.floor(vim.o.columns * 0.35)
@@ -41,6 +48,8 @@ return {
 	},
 
 	keys = {
+		-- <leader>at / <leader>aF 只映射 normal 模式：终端模式下以空格开头的
+		-- leader 序列会截获 Claude 输入中的空格并等待 timeoutlen。
 		{
 			"<leader>aa",
 			function()
@@ -55,7 +64,7 @@ return {
 				require("sidekick.cli").toggle({ focus = true })
 			end,
 			desc = "切换 Agent 终端窗口",
-			mode = { "n", "t" },
+			mode = "n",
 		},
 		{
 			"<leader>ad",
@@ -74,7 +83,7 @@ return {
 			mode = { "n", "x" },
 		},
 		{
-			"<leader>af",
+			"<leader>aF",
 			function()
 				require("sidekick.cli").send({ msg = "{file}" })
 			end,
@@ -98,12 +107,12 @@ return {
 			mode = { "n", "x" },
 		},
 		{
-			"<leader>aF",
+			"<leader>af",
 			function()
 				require("sidekick.cli").focus()
 			end,
 			desc = "聚焦到 Agent 窗口",
-			mode = { "n", "t" },
+			mode = "n",
 		},
 	},
 

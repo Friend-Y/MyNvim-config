@@ -60,6 +60,39 @@ return {
       })
     end
 
+    -- 在 TOC 中按回车跳转到章节后关闭 TOC 窗口。
+    -- markdown-plus 默认的 <CR> 只跳转、不关闭；这里在 FileType 阶段先设置
+    -- buffer-local <CR>，插件的 keymap_helper 检测到已有映射后会跳过自己的默认映射。
+    local function jump_and_close_toc()
+      local toc_win = vim.api.nvim_get_current_win()
+      local toc_state = require("markdown-plus.headers.toc_state")
+      local source_buf = toc_state.state.source_bufnr
+
+      require("markdown-plus.headers.toc_actions").jump_to_header()
+
+      -- jump_to_header 找不到源窗口时会留在 TOC；此时不要关闭。
+      if
+        source_buf
+        and vim.api.nvim_get_current_buf() == source_buf
+        and vim.api.nvim_win_is_valid(toc_win)
+      then
+        vim.api.nvim_win_close(toc_win, true)
+      end
+    end
+
+    vim.api.nvim_create_autocmd("FileType", {
+      group = vim.api.nvim_create_augroup("MarkdownPlusTocJumpClose", { clear = true }),
+      pattern = "markdown-toc",
+      callback = function(args)
+        vim.keymap.set("n", "<CR>", jump_and_close_toc, {
+          buffer = args.buf,
+          desc = "跳转到章节并关闭大纲",
+          silent = true,
+          nowait = true,
+        })
+      end,
+    })
+
     vim.api.nvim_create_autocmd("FileType", {
       pattern = "markdown",
       callback = function(args)

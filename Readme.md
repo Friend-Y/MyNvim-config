@@ -38,6 +38,56 @@ lazygit
 :hi DiffAdd
 :hi DiffDelete
 
+# Sidekick + Claude Code 键盘操作
+
+`lua/plugins/sidekick.lua` 把 Claude Code 放在右侧 35% 的终端窗口里。窗口切换和 Claude Code 内部的输入区/transcript 切换是两套独立键位。
+
+## 窗口切换
+
+| 场景 | 快捷键 | 说明 |
+|---|---|---|
+| 编辑器 → Claude Code | `<leader>aF` | 聚焦/失焦切换（CLI 已打开时） |
+| 编辑器 → Claude Code | `<leader>at` | 打开/切换右侧终端窗口 |
+| Claude Code → 编辑器 | `<C-z>` | 回到上一个窗口，终端和会话保留（sidekick `blur`） |
+| Claude Code → 左侧窗口 | `<C-h>` | 仅当左侧存在窗口时生效 |
+| 隐藏 Claude Code | `<C-.>` | 关闭窗口，进程保留 |
+| 进入 Neovim normal 模式 | `<C-q>` | 再按 `q` 隐藏窗口 |
+
+说明：
+
+- `<leader>at` / `<leader>aF` 故意只映射 normal 模式。终端模式下以空格（leader）开头的映射会截获 Claude 输入里的空格并等待 `timeoutlen`，所以 CLI 内请用 `<C-z>` 返回编辑器。
+- `<C-h/j/k/l>` 只有在对应方向存在窗口时才由 sidekick 截获。右侧布局下通常只有 `<C-h>` 生效；若在下方/上方/右侧开窗，`<C-j>`（Claude 的换行）、`<C-k>`、`<C-l>` 会被窗口导航占用。
+- `<C-z>` 在 CLI 内是 sidekick 的 blur，不是 shell 挂起；`<C-q>` 在终端模式是进入 normal，不是隐藏（sidekick 文档这里的描述已过期）。
+
+## 输入区 ↔ transcript
+
+Claude Code 的输入区和对话记录不是两个可聚焦窗格：输入区始终是 `Chat`，对话记录是独立的 `Transcript` 视图，按 `Ctrl+O` 进入/退出。
+
+| 快捷键 | 作用 |
+|---|---|
+| `Ctrl+O` | 在输入区与 transcript 之间切换（`app:toggleTranscript`） |
+| `q` / `Esc` / `Ctrl+C` | 在 transcript 内返回输入区 |
+| `j` / `k` | transcript 内上/下滚动 |
+| `g` / `G` | transcript 顶部/底部 |
+| `PageUp` / `PageDown` | transcript 整页滚动 |
+| `Ctrl+F` / `Ctrl+B` | transcript 整页下/上滚动 |
+| `Space` / `Shift+Space` | transcript 整页下/上滚动 |
+| `Ctrl+E` | transcript 内展开/收起全部输出 |
+| `Ctrl+J` | 输入区换行 |
+| `Shift+Tab` | 切换 Claude Code 权限模式 |
+| `Ctrl+R` | 历史搜索 |
+
+## 按键冲突说明
+
+- sidekick 默认把 `<C-b>` / `<C-f>` 用于自己的 buffer/file picker；本配置已禁用这两项，让 Claude Code 的 transcript 整页滚动可用。CLI 内不再有 sidekick 的 buffer/file picker；需要发送文件/缓冲区时，从编辑器用 `<leader>af` / `<leader>ai` 等。
+- `<C-p>` 仍是 sidekick 的 prompt picker，因此 Claude Code 的 `Ctrl+P`（transcript 行上移）被截获；用 `k` 代替。
+- `<C-h>` 在 CLI 内是“回到左侧窗口”，不是退格；需要 Ctrl+H 退格时先按 `<C-q>` 进入 normal 模式，或修改 `cli.win.keys.nav_left`。
+- `<C-z>` 在 CLI 内是 sidekick 的 blur，不是 shell 挂起。
+
+## 能力边界
+
+transcript 是 Claude Code 的终端 TUI 视图，不是 Neovim buffer：不能用 visual 选择、`/` 搜索、yank 到寄存器，也不能和输入区并排显示。需要“对话区是只读 Neovim buffer、输入区是普通可编辑 buffer、Tab 切换”的完整体验时，参见 `~/Projects/claude-vim-mode/plan.md` 的 agentic.nvim 方案。
+
 # Obsidian 与 Vim Motions
 
 Obsidian 集成现在完全在 Obsidian 应用内完成，不再使用 `obsidian.nvim` 或 `obsidian-bridge.nvim`。Neovim 侧只保留 Vim Motions 的配置文件：
