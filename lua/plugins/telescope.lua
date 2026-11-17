@@ -1,4 +1,5 @@
 return {
+    -- 文件搜索插件
   'nvim-telescope/telescope.nvim',
   version = '*', -- 推荐固定到最新发布版
   dependencies = {
