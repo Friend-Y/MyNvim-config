@@ -150,8 +150,42 @@ local function apply()
   set({ "@lsp.type.number" }, number_color)
   set({ "@lsp.type.operator" }, number_color)
 
+  -- Markdown readability: keep body text neutral, give structure and emphasis
+  -- semantic colors from the matugen palette plus a few derived hues.
+  local heading4 = shift_hue(p.tertiary, 75) -- blue
+  local heading5 = shift_hue(p.tertiary, 30) -- teal
+  local heading6 = shift_hue(p.primary, -30) -- orange
+  local math_color = shift_hue(p.tertiary, 40)
+
+  -- H4-H6 otherwise fade into on_surface_variant/outline.
+  set({ "@markup.heading.4", "RenderMarkdownH4" }, heading4, { bold = true })
+  set({ "@markup.heading.5", "RenderMarkdownH5" }, heading5, { bold = true })
+  set({ "@markup.heading.6", "RenderMarkdownH6" }, heading6, { bold = true })
+
+  -- Bold warm tan, italic soft green, strikethrough muted.
+  set({ "@markup.strong" }, p.secondary, { bold = true })
+  set({ "@markup.italic" }, p.tertiary, { italic = true })
+  set({ "@markup.strikethrough" }, p.outline, { strikethrough = true })
+
+  -- Quotes were almost as dim as comments; lift them to on_surface_variant.
+  set({ "@markup.quote", "RenderMarkdownQuote" }, p.on_surface_variant, { italic = true })
+
+  -- Inline code, inline math and rendered LaTeX blocks.
+  set({ "@markup.raw" }, string_color)
+  set({ "@markup.math", "RenderMarkdownMath" }, math_color)
+
+  -- Checkboxes and callout semantics.
+  set({ "@markup.list.checked", "RenderMarkdownChecked" }, p.tertiary)
+  set({ "@markup.list.unchecked", "RenderMarkdownUnchecked" }, p.outline)
+  set({ "RenderMarkdownTodo" }, p.secondary)
+  set({ "RenderMarkdownInfo" }, p.secondary)
+  set({ "RenderMarkdownSuccess" }, p.tertiary)
+  set({ "RenderMarkdownWarn" }, p.primary)
+  set({ "RenderMarkdownHint" }, heading5)
+  set({ "RenderMarkdownError" }, p.error)
+  set({ "RenderMarkdownCodeInfo" }, p.secondary)
+
   -- Make rendered LaTeX stand out from the Markdown text instead of blending in.
-  set({ "@markup.math" }, p.on_surface)
   vim.api.nvim_set_hl(0, "MarkviewLatexBlock", {
     fg = p.on_surface,
     bg = p.surface_high,

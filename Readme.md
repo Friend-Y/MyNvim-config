@@ -243,6 +243,24 @@ lua/core/syntax_colors.lua
 | 数字 / 运算符 | 橙色 `#f78453` |
 | 关键字 / 常量 | 金色 `#f7d653` |
 
+## Markdown 渲染颜色
+
+matugen 自身的 Markdown 高亮之外，`syntax_colors.lua` 还补充了以下覆盖（颜色会随壁纸色板变化）：
+
+| 元素 | 颜色 |
+|---|---|
+| H1 / H2 / H3 | 金 / 棕 / 绿（primary / secondary / tertiary） |
+| H4 / H5 / H6 | 蓝 `#96bfe4` / 青 `#96e4ce` / 橙 `#f78453`（由 tertiary / primary 派生） |
+| 加粗 | 暖棕 `#e7d18c` |
+| 斜体 | 柔绿 `#96e4a7` |
+| 引用 | `#cdc6b4` 斜体 |
+| 行内代码 | 绿 `#76eb8f` |
+| 行内 / 块级公式 | 青 `#96e4db` |
+| 已勾选任务 | 绿 `#96e4a7` |
+| callout success / warn | 绿 / 金 |
+
+H4–H6 与公式颜色用 `shift_hue` 从当前 tertiary/primary 派生，换壁纸后会跟着变；想固定色相可改对应 `shift_hue` 的角度。
+
 ## 修改变量颜色
 
 找到：
