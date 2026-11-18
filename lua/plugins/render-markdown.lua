@@ -118,6 +118,12 @@ return {
   dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
   ft = 'markdown',
   opts = {
+    code = {
+      -- 保持 full 宽度：背景和顶部语言栏仍占满窗口；
+      -- 代码文字按 (窗口宽度 - 代码宽度) 的 50% 右移，实现水平居中。
+      width = 'full',
+      left_margin = 0.5,
+    },
     latex = {
       enabled = true,
       -- 需要系统里存在 latex2text（python-pylatexenc）或 utftex 之一
