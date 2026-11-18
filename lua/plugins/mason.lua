@@ -57,7 +57,19 @@ return {
 				},
 			},
 			["pyright"] = {},
-            ["marksman"] = {},
+			["marksman"] = {
+				root_dir = function(bufnr, on_dir)
+					local name = vim.api.nvim_buf_get_name(bufnr)
+					if name == "" then
+						return
+					end
+					-- vault 内由 obsidian-ls 负责 Markdown，避免重复补全/重命名/定义
+					if vim.fs.root(bufnr, { ".obsidian" }) then
+						return
+					end
+					on_dir(vim.fs.root(bufnr, { ".marksman.toml", ".git" }) or vim.fs.dirname(name))
+				end,
+			},
 		}
 		for server, config in pairs(servers) do
 			setup(server, config)

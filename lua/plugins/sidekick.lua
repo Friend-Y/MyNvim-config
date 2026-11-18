@@ -27,6 +27,9 @@ return {
 
 	opts = {
 		cli = {
+			-- 安装 snacks.nvim 后默认会改用 snacks picker；继续使用 Telescope，
+			-- 保持 <C-p> prompt picker 的现有行为。
+			picker = "telescope",
 			win = {
 				layout = "right",
 				split = {
@@ -38,6 +41,9 @@ return {
 				keys = {
 					buffers = false,
 					files = false,
+					-- 主用 <C-S-z>；保留默认 <C-z> 作为 CLI 内的兜底 blur，
+					-- 避免 Ctrl+Z 被终端当作挂起。编辑器里的 <C-z> 仍是 undo。
+					blur = { "<C-S-z>", "blur", mode = { "n", "t" }, desc = "离开 CLI 窗口" },
 				},
 				-- 在 win 内部通过 config 回调动态设置正整数宽度
 				config = function(terminal)
@@ -48,7 +54,7 @@ return {
 	},
 
 	keys = {
-		-- <leader>at / <leader>aF 只映射 normal 模式：终端模式下以空格开头的
+		-- <leader>at / <leader>af 只映射 normal 模式：终端模式下以空格开头的
 		-- leader 序列会截获 Claude 输入中的空格并等待 timeoutlen。
 		{
 			"<leader>aa",
@@ -112,6 +118,15 @@ return {
 				require("sidekick.cli").focus()
 			end,
 			desc = "聚焦到 Agent 窗口",
+			mode = "n",
+		},
+		{
+			-- CLI 内的 buffer-local blur 映射优先；这里负责从编辑器聚焦 CLI。
+			"<C-S-z>",
+			function()
+				require("sidekick.cli").focus()
+			end,
+			desc = "聚焦/切换到 Agent 窗口",
 			mode = "n",
 		},
 	},

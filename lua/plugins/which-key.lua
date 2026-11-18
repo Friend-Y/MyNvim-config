@@ -58,6 +58,28 @@ return {
         { localleader .. "h", group = "Markdown 标题", buffer = buf },
       }
 
+      -- obsidian.nvim 的映射定义在 lua/plugins/obsidian.lua；
+      -- 这里只补 buffer-local 的中文说明。
+      local obsidian_descriptions = {
+        mn = "新建笔记",
+        mq = "快速切换笔记",
+        mf = "搜索笔记",
+        ml = "反向链接",
+        md = "今日笔记",
+        mt = "标签搜索",
+        mP = "粘贴图片到附件",
+        mo = "在 Obsidian 中打开",
+        mR = "重命名笔记并更新链接",
+      }
+
+      for key, desc in pairs(obsidian_descriptions) do
+        table.insert(specs, {
+          "<leader>" .. key,
+          desc = desc,
+          buffer = buf,
+        })
+      end
+
       for key, desc in pairs(markdown_plus_descriptions) do
         table.insert(specs, {
           localleader .. key,

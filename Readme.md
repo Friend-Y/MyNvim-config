@@ -46,18 +46,21 @@ lazygit
 
 | 场景 | 快捷键 | 说明 |
 |---|---|---|
-| 编辑器 → Claude Code | `<leader>aF` | 聚焦/失焦切换（CLI 已打开时） |
+| 编辑器 → Claude Code | `<C-S-z>` | 聚焦/切换到 CLI（CLI 已打开时）；CLI 内同一个键返回编辑器 |
+| 编辑器 → Claude Code | `<leader>af` | 聚焦/失焦切换（备用） |
 | 编辑器 → Claude Code | `<leader>at` | 打开/切换右侧终端窗口 |
-| Claude Code → 编辑器 | `<C-z>` | 回到上一个窗口，终端和会话保留（sidekick `blur`） |
+| Claude Code → 编辑器 | `<C-S-z>` | 回到上一个窗口，终端和会话保留（sidekick `blur`） |
 | Claude Code → 左侧窗口 | `<C-h>` | 仅当左侧存在窗口时生效 |
 | 隐藏 Claude Code | `<C-.>` | 关闭窗口，进程保留 |
 | 进入 Neovim normal 模式 | `<C-q>` | 再按 `q` 隐藏窗口 |
 
 说明：
 
-- `<leader>at` / `<leader>aF` 故意只映射 normal 模式。终端模式下以空格（leader）开头的映射会截获 Claude 输入里的空格并等待 `timeoutlen`，所以 CLI 内请用 `<C-z>` 返回编辑器。
+- 编辑器里的 `<C-z>` 仍然是 `lua/core/Keymap.lua` 的 undo；新增 `<C-S-z>` 作为主切换键。`<C-S-z>` 在编辑器里聚焦 CLI，在 CLI 里 blur 回上一个窗口，形成对称切换。CLI 内保留 sidekick 默认的 `<C-z>` 作为兜底 blur，避免 Ctrl+Z 被终端当作挂起；它不影响编辑器里的 undo。
+- `<C-S-z>` 依赖终端能区分 Ctrl+Shift+Z；kitty 会以 CSI u 发送，Neovim 0.12 能解析（已验证）。若在其他终端里它被当作 Ctrl+Z，仍可用 `<leader>af` 聚焦、`<C-h>` 返回。
+- `<leader>at` / `<leader>af` 故意只映射 normal 模式。终端模式下以空格（leader）开头的映射会截获 Claude 输入里的空格并等待 `timeoutlen`，所以 CLI 内请用 `<C-S-z>` 返回编辑器。
 - `<C-h/j/k/l>` 只有在对应方向存在窗口时才由 sidekick 截获。右侧布局下通常只有 `<C-h>` 生效；若在下方/上方/右侧开窗，`<C-j>`（Claude 的换行）、`<C-k>`、`<C-l>` 会被窗口导航占用。
-- `<C-z>` 在 CLI 内是 sidekick 的 blur，不是 shell 挂起；`<C-q>` 在终端模式是进入 normal，不是隐藏（sidekick 文档这里的描述已过期）。
+- `<C-S-z>` 在 CLI 内是 sidekick 的 blur，不是 shell 挂起；`<C-q>` 在终端模式是进入 normal，不是隐藏（sidekick 文档这里的描述已过期）。
 
 ## 输入区 ↔ transcript
 
@@ -79,10 +82,10 @@ Claude Code 的输入区和对话记录不是两个可聚焦窗格：输入区�
 
 ## 按键冲突说明
 
-- sidekick 默认把 `<C-b>` / `<C-f>` 用于自己的 buffer/file picker；本配置已禁用这两项，让 Claude Code 的 transcript 整页滚动可用。CLI 内不再有 sidekick 的 buffer/file picker；需要发送文件/缓冲区时，从编辑器用 `<leader>af` / `<leader>ai` 等。
+- sidekick 默认把 `<C-b>` / `<C-f>` 用于自己的 buffer/file picker；本配置已禁用这两项，让 Claude Code 的 transcript 整页滚动可用。CLI 内不再有 sidekick 的 buffer/file picker；需要发送文件/缓冲区时，从编辑器用 `<leader>aF` / `<leader>ai` 等。
 - `<C-p>` 仍是 sidekick 的 prompt picker，因此 Claude Code 的 `Ctrl+P`（transcript 行上移）被截获；用 `k` 代替。
 - `<C-h>` 在 CLI 内是“回到左侧窗口”，不是退格；需要 Ctrl+H 退格时先按 `<C-q>` 进入 normal 模式，或修改 `cli.win.keys.nav_left`。
-- `<C-z>` 在 CLI 内是 sidekick 的 blur，不是 shell 挂起。
+- `<C-z>` 在 CLI 内仍是 sidekick 的兜底 blur（默认行为），不会影响编辑器里的 undo；主用 `<C-S-z>`。
 
 ## 能力边界
 
@@ -90,32 +93,27 @@ transcript 是 Claude Code 的终端 TUI 视图，不是 Neovim buffer：不能�
 
 # Obsidian 与 Vim Motions
 
-Obsidian 集成现在完全在 Obsidian 应用内完成，不再使用 `obsidian.nvim` 或 `obsidian-bridge.nvim`。Neovim 侧只保留 Vim Motions 的配置文件：
+Neovim 侧通过 `lua/plugins/obsidian.lua` 使用 `obsidian.nvim` 编辑 vault：
 
-```text
-~/.config/nvim/obsidian/init.lua
-```
+- 笔记切换/搜索/反向链接/标签走 Telescope：`<leader>mn`（新建）、`<leader>mq`（快速切换）、`<leader>mf`（搜索）、`<leader>ml`（反向链接）、`<leader>mt`（标签）、`<leader>md`（今日笔记）、`<leader>mo`（在 Obsidian 中打开）。
+- 链接：`gf` 或普通模式 `<CR>` 跟随光标下的 `[[链接]]`/标签；`<leader>mR` 重命名当前笔记并更新全库引用。
+- 图片：`<leader>mP` 把剪贴板截图保存到当前笔记同级 `图片/` 并插入 `![[...]]`；buffer 内由 `snacks.nvim` 的 image 模块预览（需要 kitty 图形协议）。
+- 新笔记文件名=标题，不自动写 YAML frontmatter；已有 frontmatter 原样保留。
+- vault 内的 Markdown 由 obsidian.nvim 内置的 `obsidian-ls` 处理，marksman 在 `.obsidian` vault 内自动跳过。
 
 Vault 路径：
 
 ```text
-~/Documents/Obsidian/MyVault/obsidian_-data
+~/Documents/Obsidian/MyVault
 ```
 
-Vim Motions 的 **Custom init.lua path** 当前设置为：
+Obsidian 应用内的 Vim Motions 配置仍是外部文件：
 
 ```text
 ~/.config/obsidian/init.lua
 ```
 
-这个文件是指向上述配置的符号链接：
-
-```text
-~/.config/obsidian/init.lua
-  -> ~/.config/nvim/obsidian/init.lua
-```
-
-如果移动了 Neovim 配置目录，需要重新创建这个链接；也可以删除链接，在 Vim Motions 设置里把 **Custom init.lua path** 直接改为 `~/.config/nvim/obsidian/init.lua`。
+它是普通文件（vault 内另有一份 `Vim Motion配置.md` 副本），不是指向 Neovim 配置目录的符号链接。修改后，在 Obsidian 命令面板执行 “Vim Motions: Reload configuration”。
 
 ## 前置条件
 
