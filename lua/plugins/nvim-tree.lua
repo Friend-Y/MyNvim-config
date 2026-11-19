@@ -3,6 +3,12 @@ return {
     "nvim-tree/nvim-tree.lua",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {
+        filters = {
+            git_ignored = false, -- 默认显示 .gitignore 忽略的文件
+        },
+        renderer = {
+            highlight_git = "name", -- 用 git 状态给文件名着色（忽略项默认用 Comment 色）
+        },
         actions = {
             open_file = {
                 quit_on_open = true,
@@ -11,7 +17,7 @@ return {
         on_attach = function(bufnr)
             local api = require("nvim-tree.api")
 
-            -- 先加载 nvim-tree 的默认键位，再覆盖下面三个
+            -- 先加载 nvim-tree 的默认键位，再覆盖下面这些
             api.map.on_attach.default(bufnr)
 
             local function opts(desc)
@@ -23,6 +29,9 @@ return {
                     nowait = true,
                 }
             end
+
+            -- I：切换是否显示 .gitignore 忽略的文件
+            vim.keymap.set("n", "I", api.filter.git.ignored.toggle, opts("切换显示 .gitignore 忽略的文件"))
 
             -- l：展开文件夹；已展开则不动；在文件上则打开文件
             vim.keymap.set("n", "l", function()

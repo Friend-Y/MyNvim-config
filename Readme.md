@@ -244,7 +244,6 @@ lua/core/syntax_colors.lua
 | 关键字 / 常量 | 金色 `#f7d653` |
 
 ## Markdown 渲染颜色
-
 matugen 自身的 Markdown 高亮之外，`syntax_colors.lua` 还补充了以下覆盖（颜色会随壁纸色板变化）：
 
 | 元素 | 颜色 |
