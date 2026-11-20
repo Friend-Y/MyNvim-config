@@ -137,5 +137,42 @@ return {
 
 		-- 你额外的 Neovim 设置
 		vim.o.autoread = true
+
+		-- :q 只关闭当前窗口，不是退出 Neovim。关掉编辑器窗口后 Sidekick 的
+		-- 终端分屏就成了唯一窗口，于是铺满整个屏幕。这里在“关掉最后一个非
+		-- Sidekick 窗口、屏幕上只剩 Agent 窗口”时，结束会话并直接退出。
+		local group = vim.api.nvim_create_augroup("sidekick_quit", { clear = true })
+		vim.api.nvim_create_autocmd("WinClosed", {
+			group = group,
+			callback = function(args)
+				local closing = tonumber(args.match)
+				-- 在 Agent 窗口里 :q 只关分屏，保持默认行为
+				if not closing or (vim.w[closing] and vim.w[closing].sidekick_cli) then
+					return
+				end
+				-- 还有别的普通窗口时也不接管（比如 help、quickfix、浮窗）
+				local rest = {}
+				for _, tab in ipairs(vim.api.nvim_list_tabpages()) do
+					for _, win in ipairs(vim.api.nvim_tabpage_list_wins(tab)) do
+						if win ~= closing then
+							rest[#rest + 1] = win
+						end
+					end
+				end
+				if #rest == 0 then
+					return
+				end
+				for _, win in ipairs(rest) do
+					if not (vim.w[win] and vim.w[win].sidekick_cli) then
+						return
+					end
+				end
+				-- WinClosed 触发时窗口还没从布局里移除，延后到布局更新后再操作
+				vim.schedule(function()
+					require("sidekick.cli").close({ all = true })
+					vim.cmd("quitall")
+				end)
+			end,
+		})
 	end,
 }

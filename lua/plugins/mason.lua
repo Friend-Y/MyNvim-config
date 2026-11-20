@@ -70,6 +70,7 @@ return {
 					on_dir(vim.fs.root(bufnr, { ".marksman.toml", ".git" }) or vim.fs.dirname(name))
 				end,
 			},
+            ["json-lsp"] = {},
 		}
 		for server, config in pairs(servers) do
 			setup(server, config)

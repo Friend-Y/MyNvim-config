@@ -77,7 +77,8 @@ map("n", "<leader>yC", "<cmd>Yazi cwd<cr>", { desc = "Yazi 当前目录（实验
 -- LSP（交给 VSCode 原生）----------------------------------------------
 map("n", "<leader>lr", action("editor.action.rename"), { desc = "重命名符号" })
 map("n", "<leader>lc", action("editor.action.quickFix"), { desc = "代码操作 / 快速修复" })
-map("n", "<leader>ld", action("editor.action.revealDefinition"), { desc = "跳转到定义" })
+map("n", "<leader>ld", action("editor.action.peekDefinition"), { desc = "速览定义" })
+map("n", "<leader>lD", action("editor.action.revealDefinition"), { desc = "跳转到定义" })
 map("n", "<leader>lh", action("editor.action.showHover"), { desc = "查看文档 / 悬停" })
 map("n", "<leader>lR", action("editor.action.findReferences"), { desc = "查找引用" })
 map("n", "<leader>ln", action("editor.action.marker.nextInFiles"), { desc = "下一个诊断" })

@@ -61,6 +61,7 @@ lazygit
 - `<leader>at` / `<leader>af` 故意只映射 normal 模式。终端模式下以空格（leader）开头的映射会截获 Claude 输入里的空格并等待 `timeoutlen`，所以 CLI 内请用 `<C-S-z>` 返回编辑器。
 - `<C-h/j/k/l>` 只有在对应方向存在窗口时才由 sidekick 截获。右侧布局下通常只有 `<C-h>` 生效；若在下方/上方/右侧开窗，`<C-j>`（Claude 的换行）、`<C-k>`、`<C-l>` 会被窗口导航占用。
 - `<C-S-z>` 在 CLI 内是 sidekick 的 blur，不是 shell 挂起；`<C-q>` 在终端模式是进入 normal，不是隐藏（sidekick 文档这里的描述已过期）。
+- 退出：`:q` 只关闭当前窗口，不是退出 Neovim。若不管它，关掉编辑器窗口后 Agent 终端会成为唯一窗口并铺满屏幕。`lua/plugins/sidekick.lua` 里加了 `WinClosed` 自动命令：当关掉的窗口不是 Sidekick 窗口、且屏幕上只剩 Sidekick 窗口时，先 `sidekick.cli.close({ all = true })` 结束会话，再 `quitall`。所以 `:q` / `:wq` / `:x` / `:qa` 都能一步退出；在 Agent 窗口里 `:q` 仍然只关分屏。
 
 ## 输入区 ↔ transcript
 
@@ -329,6 +330,21 @@ matugen 模板：
 
 修改 `30.0` 后需要重新运行 matugen，再用 `:MatugenReload` 或 `SIGUSR1` 让 Neovim 重载主题。
 
+# 速览定义（Peek Definition）
+
+`lua/plugins/lspsaga.lua` 用 lspsaga 自带的 `peek_definition` 实现类 VS Code 的速览定义，不需要额外装插件。
+
+| 快捷键 | 作用 |
+|---|---|
+| `<leader>ld` | 速览定义：弹出悬浮窗显示光标下符号的定义并定位到该行 |
+| `<leader>lD` | 跳转到定义（原来的 `<leader>ld`） |
+
+- 悬浮窗内：`q` 关闭当前这层，`<Esc>` 关闭所有层，`<C-o>` 在悬浮窗位置打开该定义文件；`<C-v>` / `<C-x>` / `<C-t>` 分别是垂直分屏、水平分屏、新标签页打开。
+- 悬浮窗里可以继续按 `<leader>ld` 速览再下一层定义（A → B → C），与 VS Code 的嵌套速览一致。
+- 窗口尺寸是当前窗口的 6 成宽 5 成高，由 `opts.definition.width` / `height` 控制，`number` 控制行号；`opts.definition.keys` 可改上述悬浮窗内键位。
+- 光标不在有 LSP 定义的符号上时（纯文本、Markdown 等），lspsaga 只提示响应为空，不会弹出窗口。
+- VSCode 分支（`lua/core/vscode.lua`）用原生的 `editor.action.peekDefinition`，键位一致。
+
 # VSCode + vscode-neovim
 
 `vscode-neovim` 会启动一个嵌入的 Neovim，并加载 `~/.config/nvim/init.lua`。`init.lua` 通过 `vim.g.vscode` 分支：
@@ -377,7 +393,8 @@ LSP、Git 与 Markdown：
 |---|---|
 | `<leader>lr` | 重命名符号 |
 | `<leader>lc` | 快速修复 |
-| `<leader>ld` | 跳转到定义 |
+| `<leader>ld` | 速览定义（VSCode peek widget） |
+| `<leader>lD` | 跳转到定义 |
 | `<leader>lh` | 悬停文档 |
 | `<leader>lR` | 查找引用 |
 | `<leader>ln` / `<leader>lp` | 下一个 / 上一个诊断 |

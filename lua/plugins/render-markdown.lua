@@ -119,6 +119,9 @@ return {
   ft = 'markdown',
   opts = {
     code = {
+      -- mermaid 块交给 render-markdown-mermaid.nvim 渲染成字符画，
+      -- 这里不再画代码块边框/背景/语言标签，避免与图表叠在一起。
+      disable = { "mermaid" },
       -- 保持 full 宽度：背景和顶部语言栏仍占满窗口；
       -- 代码文字按 (窗口宽度 - 代码宽度) 的 50% 右移，实现水平居中。
       width = 'full',
